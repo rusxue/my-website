@@ -3,250 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F4F5F8">
+<meta name="theme-color" content="#F6F6F4">
 <title>房租估值</title>
 <style>
+  /* ============================================================
+     设计系统 · Swiss Editorial
+     主色 2 个：墨黑 #17191E / 朱红 #E2441F（中性灰阶不算主色）
+     字重 3 档：400 / 500 / 700
+     间距：4px 网格（4·8·12·16·20·24·32·40·48·64）
+     无圆角 · 无动效 · 无 emoji
+     ============================================================ */
   :root{
-    --bg:#F4F5F8;
-    --card:#FFFFFF;
-    --ink:#171A21;
-    --sub:#8A8F9C;
-    --line:#ECEDF1;
-    --accent:#4F46E5;
-    --accent-soft:#EEEDFE;
-    --plus:#15803D;
-    --minus:#DC2626;
-    --warn:#D97706;
-    --radius:16px;
+    --ink:#17191E;
+    --accent:#E2441F;
+    --bg:#F6F6F4;
+    --surface:#FFFFFF;
+    --line:#DADAD6;
+    --line-dark:#A8ABA2;
+    --sub:#6E7178;
+    --faint:#A9ACB2;
+    --f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    --f-num:"Bahnschrift","Segoe UI","Helvetica Neue",Arial,sans-serif;
+    --w1:400; --w2:500; --w3:700;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg);
     color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Roboto,"Helvetica Neue",sans-serif;
-    font-size:16px;
-    line-height:1.5;
-    padding-bottom:calc(40px + env(safe-area-inset-bottom));
+    font-family:var(--f-body);
+    font-size:16px;line-height:1.5;
+    padding-bottom:calc(48px + env(safe-area-inset-bottom));
   }
+  .topbar{height:4px;background:var(--accent);}
   .wrap{max-width:520px;margin:0 auto;padding:0 16px;}
 
-  /* ===== Header ===== */
-  header{
-    padding:calc(28px + env(safe-area-inset-top)) 16px 16px;
-    text-align:center;
+  /* ================= Header ================= */
+  header{padding:36px 0 0;}
+  .kicker{
+    display:flex;align-items:center;justify-content:space-between;
+    font-family:var(--f-num);font-size:12px;font-weight:var(--w1);
+    letter-spacing:.22em;color:var(--sub);text-transform:uppercase;
   }
-  header .logo{
-    width:52px;height:52px;border-radius:16px;background:var(--accent);
-    display:flex;align-items:center;justify-content:center;
-    margin:0 auto 12px;font-size:26px;
-    box-shadow:0 8px 20px rgba(79,70,229,.28);
+  .kicker .k-dot{width:8px;height:8px;background:var(--accent);flex:none;}
+  .kicker .k-left{display:flex;align-items:center;gap:12px;}
+  h1.title{
+    margin:20px 0 0;
+    font-size:40px;line-height:1.1;font-weight:var(--w3);
+    letter-spacing:.04em;
   }
-  header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.5px;}
-  header p{margin:4px 0 0;font-size:13px;color:var(--sub);}
+  .t-sub{
+    margin:8px 0 0;
+    font-size:13px;font-weight:var(--w1);color:var(--sub);
+    letter-spacing:.06em;
+  }
+  .rule{height:4px;background:var(--ink);margin:24px 0 0;}
 
-  /* ===== Cards ===== */
-  .card{
-    background:var(--card);
-    border-radius:var(--radius);
-    padding:18px 16px;
-    margin-bottom:14px;
-    box-shadow:0 1px 2px rgba(20,22,30,.04),0 4px 14px rgba(20,22,30,.04);
+  /* ================= Result ================= */
+  .result{background:var(--ink);color:#fff;margin:32px 0 0;padding:28px;}
+  .r-label{
+    font-size:12px;font-weight:var(--w1);letter-spacing:.24em;
+    color:rgba(255,255,255,.66);text-transform:uppercase;
   }
-  .sec-title{
-    display:flex;align-items:center;gap:8px;
-    font-size:13px;font-weight:600;color:var(--sub);
-    letter-spacing:1px;margin:0 0 14px;text-transform:uppercase;
+  .r-amount{
+    font-family:var(--f-num);
+    font-size:64px;line-height:1;font-weight:var(--w3);
+    color:var(--accent);margin:16px 0 0;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
   }
-  .sec-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;}
+  .r-amount small{font-size:24px;font-weight:var(--w2);margin-right:4px;}
+  .r-meta{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;
+    border-top:1px solid rgba(255,255,255,.24);
+    margin:24px 0 0;padding:20px 0 0;
+  }
+  .r-meta .m-cell label{
+    display:block;font-size:11px;font-weight:var(--w1);
+    letter-spacing:.16em;color:rgba(255,255,255,.55);text-transform:uppercase;
+  }
+  .r-meta .m-cell b{
+    display:block;margin-top:4px;
+    font-family:var(--f-num);font-size:24px;font-weight:var(--w3);
+    font-variant-numeric:tabular-nums;
+  }
+  .r-limit{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--accent);color:#fff;
+    font-size:13px;font-weight:var(--w2);letter-spacing:.04em;
+    padding:12px 16px;margin:24px 0 0;
+  }
+  .r-limit b{font-family:var(--f-num);font-size:16px;font-weight:var(--w3);}
 
-  /* ===== Switch row ===== */
+  /* ================= Sections ================= */
+  section{border-top:1px solid var(--line);padding:24px 0;}
+  section:last-of-type{border-bottom:1px solid var(--line);}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 8px;}
+  .sec-no{
+    font-family:var(--f-num);font-size:12px;font-weight:var(--w2);
+    color:var(--accent);letter-spacing:.08em;
+  }
+  .sec-title{font-size:16px;font-weight:var(--w3);margin:0;letter-spacing:.02em;}
+  .sec-line{flex:1;height:1px;background:var(--line);align-self:center;}
+
+  /* ================= Switch rows ================= */
   .sw-row{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:12px 0;
-    border-bottom:1px solid var(--line);
-    min-height:52px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:12px 0;border-bottom:1px solid var(--line);
   }
-  .sw-row:last-child{border-bottom:none;padding-bottom:2px;}
+  .sw-row:last-child{border-bottom:none;}
   .sw-info{flex:1;min-width:0;}
-  .sw-info .name{font-size:15px;font-weight:500;}
-  .sw-info .desc{font-size:12px;color:var(--sub);margin-top:1px;}
+  .sw-name{display:block;font-size:16px;font-weight:var(--w2);line-height:1.3;}
+  .sw-desc{display:block;font-size:12px;color:var(--sub);font-weight:var(--w1);margin-top:2px;}
   .sw{
-    position:relative;flex:none;width:50px;height:30px;border-radius:30px;
-    background:#D9DCE3;transition:background .22s;
-    cursor:pointer;
+    flex:none;position:relative;
+    width:44px;height:24px;
+    background:#C9CBD0;border:1px solid #B8BAC0;
+    padding:0;cursor:pointer;outline:none;
   }
-  .sw::after{
-    content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
-    background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);
-    transition:left .22s;
+  .sw .thumb{
+    position:absolute;top:1px;left:1px;
+    width:20px;height:20px;background:#fff;border:1px solid #8A8E96;
   }
-  .sw.on{background:var(--accent);}
-  .sw.on::after{left:23px;}
-  .sw input{position:absolute;opacity:0;pointer-events:none;}
+  .sw.on{background:var(--accent);border-color:var(--accent);}
+  .sw.on .thumb{left:21px;border-color:#fff;}
 
-  /* ===== Number rows ===== */
-  .num-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  .field label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;font-weight:500;}
+  /* ================= Number fields ================= */
+  .num-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 16px;}
+  .field label{
+    display:block;font-size:12px;color:var(--sub);
+    font-weight:var(--w1);letter-spacing:.04em;margin:0 0 8px;
+  }
   .in-wrap{position:relative;}
-  .in-wrap input[type=number]{
-    width:100%;padding:11px 34px 11px 12px;
-    border:1.5px solid var(--line);border-radius:12px;
-    background:#FAFAFC;font-size:16px;color:var(--ink);
-    outline:none;transition:border-color .15s;
+  .in-wrap input{
+    width:100%;padding:12px 44px 12px 12px;
+    border:1px solid var(--line-dark);border-radius:0;
+    background:var(--surface);font-size:16px;color:var(--ink);
+    font-family:var(--f-num);font-weight:var(--w2);
+    outline:none;
     -moz-appearance:textfield;appearance:textfield;
   }
-  .in-wrap input[type=number]:focus{border-color:var(--accent);background:#fff;}
+  .in-wrap input:focus{border-color:var(--ink);}
   .in-wrap input::-webkit-outer-spin-button,
   .in-wrap input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .in-wrap .unit{
     position:absolute;right:12px;top:50%;transform:translateY(-50%);
-    font-size:12px;color:var(--sub);pointer-events:none;
+    font-size:12px;color:var(--sub);font-weight:var(--w1);pointer-events:none;
   }
   .field.full{grid-column:1 / -1;}
-
-  /* ===== Chips (家具) ===== */
-  .chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{
-    display:flex;align-items:center;gap:6px;
-    padding:9px 14px;border-radius:999px;
-    background:#F2F3F7;color:#4B4F5A;
-    font-size:14px;font-weight:500;
-    border:1.5px solid transparent;cursor:pointer;
-    transition:all .15s;user-select:none;
+  .sec-note{
+    margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);
+    font-size:12px;color:var(--sub);font-weight:var(--w1);
+    display:flex;justify-content:space-between;gap:12px;
   }
-  .chip.on{
-    background:var(--accent-soft);color:var(--accent);
-    border-color:var(--accent);
-  }
-  .chip .ico{font-size:15px;opacity:.85;}
-  .chip.on .ico{opacity:1;}
-  .chip-hint{margin:10px 0 0;font-size:12px;color:var(--sub);}
+  .sec-note span{white-space:nowrap;}
+  .sec-note .hl{color:var(--accent);font-weight:var(--w2);}
 
-  /* ===== Date ===== */
-  .date-row{display:flex;align-items:center;gap:12px;}
+  /* ================= Furniture checklist ================= */
+  .fk-list{border-top:1px solid var(--line);}
+  .fk-row{
+    display:flex;align-items:center;gap:12px;
+    width:100%;padding:12px 0;border-bottom:1px solid var(--line);
+    background:none;border-left:none;border-right:none;border-top:none;
+    cursor:pointer;outline:none;text-align:left;
+  }
+  .fk-idx{
+    font-family:var(--f-num);font-size:12px;font-weight:var(--w1);
+    color:var(--faint);letter-spacing:.06em;flex:none;
+  }
+  .fk-name{flex:1;font-size:16px;font-weight:var(--w2);}
+  .fk-check{
+    flex:none;width:20px;height:20px;border:1px solid var(--line-dark);
+    background:var(--surface);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--f-num);font-size:13px;font-weight:var(--w3);color:#fff;
+  }
+  .fk-row.on .fk-check{background:var(--accent);border-color:var(--accent);}
+  .fk-hint{
+    margin:12px 0 0;font-size:12px;color:var(--sub);font-weight:var(--w1);
+    display:flex;justify-content:space-between;
+  }
+  .fk-hint b{color:var(--ink);font-weight:var(--w3);font-family:var(--f-num);}
+
+  /* ================= Date ================= */
+  .date-row{display:flex;align-items:center;gap:16px;}
+  .date-row label{font-size:12px;color:var(--sub);font-weight:var(--w1);letter-spacing:.04em;flex:none;}
   .date-row input[type=date]{
-    flex:1;padding:11px 12px;
-    border:1.5px solid var(--line);border-radius:12px;
-    background:#FAFAFC;font-size:15px;color:var(--ink);outline:none;
+    flex:1;padding:12px;
+    border:1px solid var(--line-dark);border-radius:0;
+    background:var(--surface);font-size:15px;color:var(--ink);
+    font-family:var(--f-num);font-weight:var(--w2);outline:none;
   }
-  .date-row input[type=date]:focus{border-color:var(--accent);}
+  .date-row input[type=date]:focus{border-color:var(--ink);}
   .date-note{
-    margin-top:10px;font-size:12.5px;color:var(--sub);
-    background:var(--accent-soft);border-radius:10px;padding:8px 12px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin:16px 0 0;padding:12px 16px;
+    border:1px solid var(--ink);background:var(--surface);
+    font-size:13px;color:var(--sub);font-weight:var(--w1);
   }
-  .date-note b{color:var(--accent);}
+  .date-note b{color:var(--ink);font-weight:var(--w3);font-family:var(--f-num);}
+  .date-note .amt{color:var(--accent);font-weight:var(--w3);font-family:var(--f-num);font-size:16px;}
 
-  /* ===== Result ===== */
-  .result{
-    background:linear-gradient(160deg,#4F46E5,#4338CA);
-    color:#fff;border-radius:20px;padding:22px 20px;
-    margin-bottom:14px;
-    box-shadow:0 10px 26px rgba(79,70,229,.30);
+  /* ================= Detail list ================= */
+  .d-row{
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    padding:8px 0;
   }
-  .result .label{font-size:13px;opacity:.85;letter-spacing:1px;}
-  .result .amount{
-    font-size:48px;font-weight:800;margin:4px 0 2px;
-    font-variant-numeric:tabular-nums;letter-spacing:-1px;
+  .d-name{font-size:14px;font-weight:var(--w1);color:var(--ink);}
+  .d-name .tag{color:var(--faint);font-size:12px;margin-left:8px;}
+  .d-amt{
+    font-family:var(--f-num);font-size:16px;font-weight:var(--w3);
+    font-variant-numeric:tabular-nums;
   }
-  .result .amount small{font-size:22px;font-weight:600;opacity:.8;margin-right:2px;}
-  .result .sub{font-size:12.5px;opacity:.85;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-  .result .sub .tag{
-    background:rgba(255,255,255,.16);padding:3px 10px;border-radius:999px;
+  .d-amt.plus{color:var(--accent);}
+  .d-amt.minus{color:var(--ink);}
+  .d-total{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:4px solid var(--ink);margin-top:12px;padding:16px 0 0;
   }
-  .result .sub .tag.hot{background:#FDE68A;color:#92400E;font-weight:600;}
-  .result .range{
-    margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.18);
-    display:flex;justify-content:space-between;font-size:12.5px;opacity:.9;
+  .d-total .l{font-size:16px;font-weight:var(--w3);letter-spacing:.04em;}
+  .d-total .v{
+    font-family:var(--f-num);font-size:28px;font-weight:var(--w3);
+    color:var(--accent);font-variant-numeric:tabular-nums;
   }
-  .result .range b{font-size:15px;display:block;font-variant-numeric:tabular-nums;}
 
-  /* ===== Detail list ===== */
-  .detail-row{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    padding:10px 0;border-bottom:1px solid var(--line);
+  footer{
+    text-align:center;padding:32px 16px 4px;
+    font-family:var(--f-num);font-size:12px;font-weight:var(--w1);
+    color:var(--faint);letter-spacing:.12em;line-height:1.8;
   }
-  .detail-row:last-child{border-bottom:none;}
-  .detail-row .l{font-size:14px;}
-  .detail-row .l .tag{font-size:11px;color:var(--sub);margin-left:6px;}
-  .detail-row .v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;}
-  .v.plus{color:var(--plus);}
-  .v.minus{color:var(--minus);}
-  .detail-row.base .l,.detail-row.base .v{font-weight:700;color:var(--ink);}
-  .detail-row.total{
-    border-top:2px solid var(--ink);border-bottom:none;
-    margin-top:6px;padding-top:12px;
-  }
-  .detail-row.total .l{font-size:15px;font-weight:700;}
-  .detail-row.total .v{font-size:17px;font-weight:800;color:var(--accent);}
-
-  footer{text-align:center;font-size:11.5px;color:#B4B8C2;padding:8px 0 4px;line-height:1.7;}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="logo">🏠</div>
-  <h1>房租估值</h1>
-  <p>参考模板逻辑 · 实时计算</p>
-</header>
-
+<div class="topbar"></div>
 <div class="wrap">
+
+  <header>
+    <div class="kicker">
+      <span class="k-left"><span class="k-dot"></span>RENT ESTIMATION</span>
+      <span>2026 / TEMPLATE</span>
+    </div>
+    <h1 class="title">房租估值</h1>
+    <p class="t-sub">基础 ¥1,980 &nbsp;·&nbsp; 硬上限 ¥3,000 &nbsp;·&nbsp; 软下限 ¥2,000</p>
+    <div class="rule"></div>
+  </header>
 
   <!-- 结果 -->
   <div class="result" id="resultCard">
-    <div class="label">合理估值（未限幅）</div>
-    <div class="amount"><small>¥</small><span id="raw">2260</span></div>
-    <div class="sub">
-      <span class="tag">硬上限 ¥3000</span>
-      <span class="tag">软下限 ¥2000</span>
-      <span class="tag hot" id="capTag" style="display:none"></span>
+    <div class="r-label">合理估值 · 未限幅</div>
+    <div class="r-amount"><small>¥</small><span id="raw">2,260</span></div>
+    <div class="r-meta">
+      <div class="m-cell">
+        <label>实际房租 · 上限封顶</label>
+        <b>¥<span id="cap">2,260</span></b>
+      </div>
+      <div class="m-cell">
+        <label>估计房租 · 下限托底</label>
+        <b>¥<span id="floor">2,260</span></b>
+      </div>
     </div>
-    <div class="range">
-      <div>实际房租<b>¥<span id="cap">—</span></b></div>
-      <div>估计房租<b>¥<span id="floor">—</span></b></div>
-    </div>
+    <div class="r-limit" id="capTag" style="display:none"></div>
   </div>
 
-  <!-- 基础配置 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>基础配置</div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">民水民电</div><div class="desc">商水商电不加分</div></div>
-      <div class="sw on" data-sw="mswd"><input type="checkbox" checked></div>
+  <!-- 01 基础配置 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2 class="sec-title">基础配置</h2>
+      <span class="sec-line"></span>
     </div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">通燃气</div><div class="desc">无燃气不加分</div></div>
-      <div class="sw on" data-sw="gas"><input type="checkbox" checked></div>
+    <div class="sw-row" data-toggle="mswd">
+      <div class="sw-info"><span class="sw-name">民水民电</span><span class="sw-desc">商水商电不加分</span></div>
+      <button class="sw on" type="button" aria-pressed="true"><span class="thumb"></span></button>
     </div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">油烟机</div><div class="desc">没有要扣 ¥500</div></div>
-      <div class="sw on" data-sw="hood"><input type="checkbox" checked></div>
+    <div class="sw-row" data-toggle="gas">
+      <div class="sw-info"><span class="sw-name">通燃气</span><span class="sw-desc">无燃气不加分</span></div>
+      <button class="sw on" type="button" aria-pressed="true"><span class="thumb"></span></button>
     </div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">滚筒洗衣机</div><div class="desc">非滚筒扣 ¥100</div></div>
-      <div class="sw on" data-sw="washer"><input type="checkbox" checked></div>
+    <div class="sw-row" data-toggle="hood">
+      <div class="sw-info"><span class="sw-name">油烟机</span><span class="sw-desc">没有则扣 ¥500</span></div>
+      <button class="sw on" type="button" aria-pressed="true"><span class="thumb"></span></button>
     </div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">2.2m 大床</div><div class="desc">有则加 ¥50</div></div>
-      <div class="sw" data-sw="bigbed"><input type="checkbox"></div>
+    <div class="sw-row" data-toggle="washer">
+      <div class="sw-info"><span class="sw-name">滚筒洗衣机</span><span class="sw-desc">非滚筒扣 ¥100</span></div>
+      <button class="sw on" type="button" aria-pressed="true"><span class="thumb"></span></button>
     </div>
-    <div class="sw-row">
-      <div class="sw-info"><div class="name">有电梯</div><div class="desc">楼层 ≥4 且无电梯扣 ¥50</div></div>
-      <div class="sw on" data-sw="elevator"><input type="checkbox" checked></div>
+    <div class="sw-row" data-toggle="bigbed">
+      <div class="sw-info"><span class="sw-name">2.2m 大床</span><span class="sw-desc">有则加 ¥50</span></div>
+      <button class="sw" type="button" aria-pressed="false"><span class="thumb"></span></button>
     </div>
-  </div>
+    <div class="sw-row" data-toggle="elevator">
+      <div class="sw-info"><span class="sw-name">有电梯</span><span class="sw-desc">楼层 ≥4 且无电梯扣 ¥50</span></div>
+      <button class="sw on" type="button" aria-pressed="true"><span class="thumb"></span></button>
+    </div>
+  </section>
 
-  <!-- 通勤与面积 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>通勤与面积</div>
+  <!-- 02 通勤与面积 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">02</span>
+      <h2 class="sec-title">通勤与面积</h2>
+      <span class="sec-line"></span>
+    </div>
     <div class="num-grid">
       <div class="field">
-        <label>原通勤（分钟）</label>
+        <label>原通勤时长</label>
         <div class="in-wrap"><input type="number" id="commOld" value="41" min="0"><span class="unit">分钟</span></div>
       </div>
       <div class="field">
-        <label>新房通勤（分钟）</label>
+        <label>新房通勤时长</label>
         <div class="in-wrap"><input type="number" id="commNew" value="50" min="0"><span class="unit">分钟</span></div>
       </div>
       <div class="field">
@@ -254,7 +318,7 @@
         <div class="in-wrap"><input type="number" id="bed" value="16" min="0" step="0.5"><span class="unit">㎡</span></div>
       </div>
       <div class="field">
-        <label>客厅面积（无填 0）</label>
+        <label>客厅面积 · 无填 0</label>
         <div class="in-wrap"><input type="number" id="living" value="1" min="0" step="0.5"><span class="unit">㎡</span></div>
       </div>
       <div class="field">
@@ -262,15 +326,19 @@
         <div class="in-wrap"><input type="number" id="kitchen" value="4" min="0" step="0.5"><span class="unit">㎡</span></div>
       </div>
       <div class="field">
-        <label>阳台面积（无填 0）</label>
+        <label>阳台面积 · 无填 0</label>
         <div class="in-wrap"><input type="number" id="balcony" value="0" min="0" step="0.5"><span class="unit">㎡</span></div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 楼层 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>楼层</div>
+  <!-- 03 楼层 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2 class="sec-title">楼层</h2>
+      <span class="sec-line"></span>
+    </div>
     <div class="num-grid">
       <div class="field">
         <label>当前楼层</label>
@@ -281,45 +349,66 @@
         <div class="in-wrap"><input type="number" id="floorTotal" value="3" min="1"><span class="unit">层</span></div>
       </div>
     </div>
-    <div class="chip-hint" style="margin-top:10px;">非 1 楼且非顶楼 +¥100；所在楼层 ≥4 且无电梯 −¥50</div>
-  </div>
-
-  <!-- 家具 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>家具（点选已有的）</div>
-    <div class="chips" id="chipBox">
-      <div class="chip on" data-k="椅子"><span class="ico">🪑</span>椅子</div>
-      <div class="chip on" data-k="桌子"><span class="ico">🪵</span>桌子</div>
-      <div class="chip on" data-k="洗漱台"><span class="ico">🚿</span>洗漱台</div>
-      <div class="chip" data-k="沙发"><span class="ico">🛋️</span>沙发</div>
-      <div class="chip" data-k="晾衣区"><span class="ico">🧺</span>晾衣区</div>
+    <div class="sec-note">
+      <span><span class="hl">+¥100</span> 非 1 楼且非顶楼</span>
+      <span><span class="hl">−¥50</span> 楼层 ≥4 且无电梯</span>
     </div>
-    <div class="chip-hint" id="chipHint">已选 3 / 5 件 · 少一件 −¥50，多一件 +¥30</div>
-  </div>
+  </section>
 
-  <!-- 日期 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>日期扣减</div>
+  <!-- 04 家具 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">04</span>
+      <h2 class="sec-title">家具</h2>
+      <span class="sec-line"></span>
+    </div>
+    <div class="fk-list" id="chipBox">
+      <button class="fk-row on" type="button" data-furniture="椅子" aria-pressed="true"><span class="fk-idx">01</span><span class="fk-name">椅子</span><span class="fk-check">✓</span></button>
+      <button class="fk-row on" type="button" data-furniture="桌子" aria-pressed="true"><span class="fk-idx">02</span><span class="fk-name">桌子</span><span class="fk-check">✓</span></button>
+      <button class="fk-row on" type="button" data-furniture="洗漱台" aria-pressed="true"><span class="fk-idx">03</span><span class="fk-name">洗漱台</span><span class="fk-check">✓</span></button>
+      <button class="fk-row" type="button" data-furniture="沙发" aria-pressed="false"><span class="fk-idx">04</span><span class="fk-name">沙发</span><span class="fk-check">✓</span></button>
+      <button class="fk-row" type="button" data-furniture="晾衣区" aria-pressed="false"><span class="fk-idx">05</span><span class="fk-name">晾衣区</span><span class="fk-check">✓</span></button>
+    </div>
+    <div class="fk-hint" id="chipHint"><span>已选 <b>03</b> / 05 件</span><span>少一件 −¥50 · 多一件 +¥30</span></div>
+  </section>
+
+  <!-- 05 日期扣减 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">05</span>
+      <h2 class="sec-title">日期扣减</h2>
+      <span class="sec-line"></span>
+    </div>
     <div class="date-row">
+      <label>评估日期</label>
       <input type="date" id="evalDate">
     </div>
-    <div class="date-note" id="dateNote">—</div>
-  </div>
+    <div class="date-note" id="dateNote">
+      <span>距 9 月 13 日 · 每远一天 −¥5</span>
+      <span class="amt" id="dateAmt">−¥115</span>
+    </div>
+  </section>
 
-  <!-- 明细 -->
-  <div class="card">
-    <div class="sec-title"><span class="dot"></span>估值明细</div>
+  <!-- 06 估值明细 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-no">06</span>
+      <h2 class="sec-title">估值明细</h2>
+      <span class="sec-line"></span>
+    </div>
     <div id="detailBox"></div>
-  </div>
+    <div class="d-total">
+      <span class="l">合理估值</span>
+      <span class="v">¥<span id="sumAmt">2,260</span></span>
+    </div>
+  </section>
 
-  <footer>基础 ¥1980 · 硬上限 ¥3000 · 软下限 ¥2000<br>距 9 月 13 日每远一天扣 ¥5 · 楼层 ≥4 且无电梯扣 ¥50</footer>
+  <footer>BASE ¥1,980 · HARD CAP ¥3,000 · SOFT FLOOR ¥2,000<br>SEP 13 RULE −¥5/DAY · FLOOR ≥4 NO ELEVATOR −¥50</footer>
 </div>
 
 <script>
 (function(){
-  var TARGET_MONTH = 8; // 9月(0-index)
-  var TARGET_DAY = 13;
-  var FURNITURE = ["椅子","桌子","洗漱台","沙发","晾衣区"];
+  var TARGET_MONTH = 8, TARGET_DAY = 13;
   var $ = function(id){ return document.getElementById(id); };
 
   function todayISO(){
@@ -332,107 +421,88 @@
     var p = iso.split("-").map(Number);
     return new Date(p[0], p[1]-1, p[2]);
   }
-  function daysBetween(a,b){
-    return Math.round((b - a) / 86400000);
-  }
-
-  function round2(n){ return Math.round(n); }
+  function daysBetween(a,b){ return Math.round((b - a) / 86400000); }
+  function fmt(n){ return Math.round(n).toLocaleString("zh-CN"); }
+  function pad(n){ return String(n).padStart(2,"0"); }
 
   function calc(){
-    // --- 输入 ---
-    var mswd   = document.querySelector('[data-sw=mswd]').classList.contains('on');
-    var gas    = document.querySelector('[data-sw=gas]').classList.contains('on');
-    var hood   = document.querySelector('[data-sw=hood]').classList.contains('on');
-    var washer = document.querySelector('[data-sw=washer]').classList.contains('on');
-    var bigbed = document.querySelector('[data-sw=bigbed]').classList.contains('on');
-    var elevator = document.querySelector('[data-sw=elevator]').classList.contains('on');
+    var on = function(k){ return document.querySelector('[data-toggle="'+k+'"] .sw').classList.contains('on'); };
+    var mswd=on("mswd"), gas=on("gas"), hood=on("hood"), washer=on("washer"),
+        bigbed=on("bigbed"), elevator=on("elevator");
 
-    var commOld = +$("commOld").value || 0;
-    var commNew = +$("commNew").value || 0;
-    var bed     = +$("bed").value || 0;
-    var living  = +$("living").value || 0;
-    var kitchen = +$("kitchen").value || 0;
-    var balcony = +$("balcony").value || 0;
-    var floorCur  = +$("floorCur").value || 0;
-    var floorTot  = +$("floorTotal").value || 0;
+    var commOld=+$("commOld").value||0, commNew=+$("commNew").value||0;
+    var bed=+$("bed").value||0, living=+$("living").value||0,
+        kitchen=+$("kitchen").value||0, balcony=+$("balcony").value||0;
+    var floorCur=+$("floorCur").value||0, floorTot=+$("floorTotal").value||0;
+    var furniture=document.querySelectorAll("#chipBox .fk-row.on").length;
 
-    var furniture = document.querySelectorAll("#chipBox .chip.on").length;
+    var evalDate=parseDate($("evalDate").value||todayISO());
+    var target=new Date(evalDate.getFullYear(), TARGET_MONTH, TARGET_DAY);
+    var diff=daysBetween(evalDate,target); if(diff<0) diff=0;
+    var dateDeduct=diff*5;
 
-    var evalDate = parseDate($("evalDate").value || todayISO());
-    var target = new Date(evalDate.getFullYear(), TARGET_MONTH, TARGET_DAY);
-    var diff = daysBetween(evalDate, target);
-    if (diff < 0) diff = 0;
-    var dateDeduct = diff * 5;
+    var rows=[];
+    function add(name,amt,hint){ if(amt!==0) rows.push({name:name,amt:Math.round(amt),hint:hint||""}); }
+    add("基础估值", 1980);
+    add("民水民电", mswd?100:0);
+    add("通燃气", gas?50:0);
+    add("通勤调整", (commOld-commNew)/5*50, "旧−新 ÷5 ×50");
+    add("卧室面积", (bed-12)*50, "基准 12㎡");
+    add("客厅面积", living*15+(living>0?100:0), "基准面积×15 +100");
+    add("厨卫面积", (kitchen-8)*20, "基准 8㎡");
+    add("阳台面积", balcony*15+(balcony>0?30:0), "有阳台 +30");
+    if(!hood)   add("油烟机", -500, "缺失");
+    if(!washer) add("洗衣机", -100, "非滚筒");
+    if(bigbed)  add("大床", 50, "2.2m");
+    var fAdj = furniture<3 ? (3-furniture)*-50 : (furniture-3)*30;
+    if(fAdj!==0) add("家具", fAdj, "基准 3 件");
+    var floorAdj=(floorCur!==1 && floorCur!==floorTot && floorCur>0 && floorTot>0)?100:0;
+    if(floorAdj) add("楼层", 100, "非1非顶");
+    if(floorCur>=4 && !elevator) add("无电梯", -50, "楼层≥4");
+    if(dateDeduct>0) add("日期扣减", -dateDeduct, "距 9/13 " + diff + " 天");
 
-    // --- 明细 ---
-    var rows = [];
-    function add(name, amt, hint){
-      if (amt !== 0) rows.push({name:name, amt:Math.round(amt), hint:hint||""});
-    }
-    add("基础估值", 1980, "");
-    add("民水民电", mswd ? 100 : 0, "");
-    add("通燃气", gas ? 50 : 0, "");
-    add("通勤调整", (commOld - commNew)/5*50, "更省通勤则加分");
-    add("卧室面积", (bed - 12)*50, "基准 12㎡");
-    add("客厅面积", living*15 + (living>0?100:0), "有客厅 +100");
-    add("厨卫面积", (kitchen - 8)*20, "基准 8㎡");
-    add("阳台面积", balcony*15 + (balcony>0?30:0), "有阳台 +30");
-    if (!hood)   add("油烟机", -500, "无油烟机");
-    if (!washer) add("洗衣机", -100, "非滚筒");
-    if (bigbed)  add("大床", 50, "2.2m 床");
-    var fAdj = furniture < 3 ? (3-furniture)*-50 : (furniture-3)*30;
-    if (fAdj !== 0) add("家具", fAdj, "基准 3 件");
-    var floorAdj = (floorCur !== 1 && floorCur !== floorTot && floorCur > 0 && floorTot > 0) ? 100 : 0;
-    if (floorAdj) add("楼层", 100, "非 1 楼非顶楼");
-    if (floorCur >= 4 && !elevator) add("无电梯", -50, "楼层 ≥4");
-    if (dateDeduct > 0) add("距9/13扣减", -dateDeduct, "距目标日 " + diff + " 天");
+    var sum=rows.reduce(function(s,r){return s+r.amt;},0);
+    var cap=Math.min(sum,3000), floorV=Math.max(sum,2000);
 
-    var sum = rows.reduce(function(s,r){ return s + r.amt; }, 0);
-    var cap = Math.min(sum, 3000);
-    var floorV = Math.max(sum, 2000);
+    $("raw").textContent=fmt(sum);
+    $("cap").textContent=fmt(cap);
+    $("floor").textContent=fmt(floorV);
+    $("sumAmt").textContent=fmt(sum);
 
-    // --- 渲染结果 ---
-    $("raw").textContent = sum;
-    $("cap").textContent = cap;
-    $("floor").textContent = floorV;
+    var tag=$("capTag");
+    if(sum>3000){ tag.style.display="flex"; tag.innerHTML="<span>超出硬上限</span><b>按 ¥3,000 计</b>"; }
+    else if(sum<2000){ tag.style.display="flex"; tag.innerHTML="<span>低于软下限</span><b>按 ¥2,000 计</b>"; }
+    else{ tag.style.display="none"; }
 
-    var tag = $("capTag");
-    if (sum > 3000) { tag.style.display=""; tag.textContent="超出上限，按 ¥3000 计"; }
-    else if (sum < 2000) { tag.style.display=""; tag.textContent="低于下限，按 ¥2000 计"; }
-    else { tag.style.display="none"; }
-
-    // --- 明细 ---
-    var html = "";
+    var html="";
     rows.forEach(function(r){
-      var cls = r.amt > 0 ? "plus" : (r.amt < 0 ? "minus" : "");
-      var sign = r.amt > 0 ? "+" : "";
-      html += '<div class="detail-row"><div class="l">'+r.name+(r.hint?'<span class="tag">'+r.hint+'</span>':'')+'</div>'
-            + '<div class="v '+cls+'">'+sign+r.amt+'</div></div>';
+      var cls=r.amt>0?"plus":"minus";
+      var sign=r.amt>0?"+":"";
+      html+='<div class="d-row"><span class="d-name">'+r.name
+          + (r.hint?'<span class="tag">'+r.hint+'</span>':'')
+          +'</span><span class="d-amt '+cls+'">'+sign+fmt(r.amt)+'</span></div>';
     });
-    html += '<div class="detail-row total"><div class="l">合理估值</div><div class="v">¥'+sum+'</div></div>';
-    $("detailBox").innerHTML = html;
+    $("detailBox").innerHTML=html;
 
-    // --- 家具提示 ---
-    $("chipHint").textContent = "已选 " + furniture + " / 5 件 · 基准 3 件，少一件 −¥50，多一件 +¥30";
+    $("chipHint").innerHTML="<span>已选 <b>"+pad(furniture)+"</b> / 05 件</span><span>少一件 −¥50 · 多一件 +¥30</span>";
 
-    // --- 日期提示 ---
-    if (diff > 0) {
-      $("dateNote").innerHTML = "评估日距 <b>9月13日</b> 还有 <b>" + diff + "</b> 天，扣 <b>¥" + dateDeduct + "</b>";
-    } else {
-      $("dateNote").innerHTML = "评估日已是 <b>9月13日</b> 或之后，日期不扣减";
-    }
+    var amtEl=$("dateAmt");
+    if(diff>0){ amtEl.textContent="−¥"+fmt(dateDeduct)+" · "+diff+" 天"; }
+    else{ amtEl.textContent="无扣减"; }
   }
 
-  // --- 事件 ---
-  document.querySelectorAll(".sw").forEach(function(sw){
-    sw.addEventListener("click", function(){
-      this.classList.toggle("on");
+  document.querySelectorAll("[data-toggle]").forEach(function(row){
+    row.addEventListener("click", function(){
+      var sw=row.querySelector(".sw");
+      sw.classList.toggle("on");
+      sw.setAttribute("aria-pressed", sw.classList.contains("on"));
       calc();
     });
   });
-  document.querySelectorAll("#chipBox .chip").forEach(function(ch){
-    ch.addEventListener("click", function(){
-      this.classList.toggle("on");
+  document.querySelectorAll("#chipBox .fk-row").forEach(function(row){
+    row.addEventListener("click", function(){
+      row.classList.toggle("on");
+      row.setAttribute("aria-pressed", row.classList.contains("on"));
       calc();
     });
   });
